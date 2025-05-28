@@ -156,6 +156,7 @@ Edit the `ThreadWelcomeSuggestions` component in `thread.tsx` to offer default p
 
 ```bash
 npm install
+npm install chart.js react-chartjs-2
 npm run dev
 ```
 
