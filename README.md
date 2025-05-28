@@ -1,7 +1,3 @@
-Here's a complete `README.md` for your **OpenAI-compatible completions backend**, designed to support the Assistant UI frontend, generate answers from MongoDB data, and produce Chart.js visualisations.
-
----
-
 # 🧠 AI Query Backend (MongoDB + OpenAI-Compatible API)
 
 This backend exposes an OpenAI-compatible `/v1/chat/completions` API that intelligently answers user queries using MongoDB data. It's designed to work seamlessly with [Assistant UI](https://github.com/assistant-ui/assistant-ui) and supports natural language querying, reasoning, and chart generation via Chart.js.
