@@ -6,7 +6,7 @@ This example shows you how to:
 * Connect the Chat2DB backend
 * Ask questions and generate visual chart outputs using Assistant UI
 
-[![Watch the video](assets/example.mp4)](assets/example.mp4)
+![Demo of Chat2DB](assets/example.gif)
 
 ## 1. Get the Dataset
 
