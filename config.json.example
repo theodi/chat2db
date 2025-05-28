@@ -1,0 +1,11 @@
+{
+  "dbType": "mongodb",
+  "mongodb": {
+    "uri": "mongodb+srv://user:password@location/db",
+    "dbName": "db"
+  },
+  "openai": {
+    "model": "gpt-4o"
+  },
+  "sampleSize": 5
+}

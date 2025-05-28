@@ -1,0 +1,52 @@
+1. **Summary of the Database:**
+   - The database appears to represent historical data related to international football (soccer) matches. It includes information about match results, shootouts, individual goal scorers, and historical changes in country names that might affect the teams' identities over time.
+
+2. **Collections and Fields:**
+
+   - **shootouts:**
+     - `_id`: Unique identifier for each document.
+     - `date`: Date of the shootout match.
+     - `home_team`: Name of the home team.
+     - `away_team`: Name of the away team.
+     - `winner`: Name of the team that won the shootout.
+
+   - **goal_scorers:**
+     - `_id`: Unique identifier for each document.
+     - `date`: Date of the match.
+     - `home_team`: Name of the home team.
+     - `away_team`: Name of the away team.
+     - `team`: Name of the team for which the goal was scored.
+     - `scorer`: Name of the player who scored the goal.
+     - `minute`: Minute of the match when the goal was scored.
+     - `own_goal`: Boolean indicating if the goal was an own goal.
+     - `penalty`: Boolean indicating if the goal was scored from a penalty.
+
+   - **former_names:**
+     - `_id`: Unique identifier for each document.
+     - `current`: Current name of the country.
+     - `former`: Former name of the country.
+     - `start_date`: Date when the former name started being used.
+     - `end_date`: Date when the former name stopped being used.
+
+   - **results:**
+     - `_id`: Unique identifier for each document.
+     - `date`: Date of the match.
+     - `home_team`: Name of the home team.
+     - `away_team`: Name of the away team.
+     - `home_score`: Number of goals scored by the home team.
+     - `away_score`: Number of goals scored by the away team.
+     - `tournament`: Name of the tournament or type of match.
+     - `city`: City where the match was played.
+     - `country`: Country where the match was played.
+     - `neutral`: Boolean indicating if the match was played on neutral ground.
+
+3. **Potential User Queries:**
+   - What are the historical results of matches between two specific teams?
+   - Which team has won the most shootouts?
+   - Who are the top goal scorers in international matches?
+   - How many goals were scored by a specific player, and in which matches?
+   - What are the historical name changes of countries that have participated in international football?
+   - How many matches have ended in a draw?
+   - What is the win-loss record of a specific team over a certain period?
+   - Which matches were played in a specific city or country?
+   - How many goals were scored in a specific tournament?
