@@ -107,7 +107,7 @@ This decision uses the full **system prompt** and conversation history to mainta
 
 ---
 
-Here’s the updated **"Generate an Answer"** section of the `README.md`, rewritten to more clearly reflect the actual logic of `handleUserQueryStreaming` without changing the code:
+Here's the updated **"Generate an Answer"** section of the `README.md`, rewritten to more clearly reflect the actual logic of `handleUserQueryStreaming` without changing the code:
 
 ---
 
@@ -120,7 +120,7 @@ When a user query is sent, the backend performs **step-by-step reasoning** and r
 1. **Interpret the Intent**
    The system uses `interpretQuery` to ask the AI to determine:
 
-   * The user’s intent (e.g. analysis, comparison, listing)
+   * The user's intent (e.g. analysis, comparison, listing)
    * The MongoDB query to run
    * A natural language reasoning explanation
 
@@ -156,7 +156,7 @@ When a user query is sent, the backend performs **step-by-step reasoning** and r
      ```
 
 5. **Cache the Result for Follow-up**
-   The raw query, results, and suggested chart type are cached using `setLastResult()`, enabling the user to follow up (e.g. “Yes please”) and trigger chart rendering later.
+   The raw query, results, and suggested chart type are cached using `setLastResult()`, enabling the user to follow up (e.g. "Yes please") and trigger chart rendering later.
 
 6. **Streaming Ends**
    The system closes the stream with a stop signal, as expected by OpenAI-compatible clients.
@@ -169,7 +169,7 @@ This clear, conversational response cycle makes the backend ideal for use in an 
 
 If the model suggests a chart:
 
-1. It responds: *“Would you like me to show this as a bar chart?”*
+1. It responds: *"Would you like me to show this as a bar chart?"*
 2. If the user agrees, it calls a `chart_generator` service
 3. The model generates a valid **Chart.js config**
 4. The system formats this into a tool call: `chart_renderer`
@@ -196,11 +196,11 @@ curl http://localhost:3001/v1/chat/completions \
 
 ---
 
-Got it! Here's how you can update the **README.md** for the **backend** to include a clear link to the frontend setup instructions:
+## 🔗 Frontend Integration
 
----
+This backend supports multiple frontend interfaces:
 
-## 🔗 Frontend Integration with Assistant UI
+### 🌐 Assistant UI (Web Frontend)
 
 To use this backend with a graphical chat interface, we recommend pairing it with the [Assistant UI frontend](https://github.com/assistant-ui/assistant-ui).
 
@@ -210,4 +210,20 @@ Follow the full setup guide in the [`frontend/README.md`](../frontend/README.md)
 * Configure it to use this backend
 * Enable rich features like markdown responses and Chart.js visualisations
 
-Once connected, you’ll be able to stream AI responses, inspect queries, and render database results as interactive charts — all inside a polished web UI.
+Once connected, you'll be able to stream AI responses, inspect queries, and render database results as interactive charts — all inside a polished web UI.
+
+### 🤖 Slack Bot Frontend
+
+For team collaboration, you can use the Slack bot frontend that allows querying the database directly from Slack channels and direct messages.
+
+Follow the setup guide in the [`slack-bot/README.md`](../slack-bot/README.md) to:
+
+* Configure the Slack bot
+* Set up Slack app permissions
+* Enable @mention support and threaded conversations
+
+The Slack bot supports:
+* @mention queries in any channel (including private channels)
+* Direct message conversations
+* Follow-up questions in threads
+* Chart generation requests
