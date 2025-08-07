@@ -8,5 +8,17 @@
     "model": "gpt-4o"
   },
   "sampleSize": 5,
-  "enableCharts": true
+  "enableCharts": true,
+  "responseSections": {
+    "intent": true,
+    "reasoning": true,
+    "query": true,
+    "result": true,
+    "summary": true,
+    "chartSuggestion": true
+  },
+  "debug": {
+    "enabled": false,
+    "logLevel": "info"
+  }
 }

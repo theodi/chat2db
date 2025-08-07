@@ -7,6 +7,11 @@
     "start": "node server.js",
     "dev": "DEBUG=true node server.js",
     "debug": "DEBUG=true NODE_ENV=development node server.js",
+    "launch": "node launcher.js",
+    "launch:main": "node launcher.js main",
+    "launch:frontend": "node launcher.js frontend",
+    "launch:slack": "node launcher.js slack",
+    "launch:all": "node launcher.js all",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

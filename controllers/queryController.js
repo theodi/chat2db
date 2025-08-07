@@ -5,8 +5,19 @@ const { getChartType } = require("../services/chartAdvisor");
 const { debugLog, debugError, debugWarn, debugInfo } = require("../utils/debug");
 
 async function handleUserQuery(userQuery, conversation, config) {
+  // Get response section configuration with defaults
+  const responseConfig = config.responseSections || {
+    intent: true,
+    reasoning: true,
+    query: true,
+    result: true,
+    summary: true,
+    chartSuggestion: true
+  };
+
   try {
     debugLog("🧠", "User query:", userQuery);
+    debugLog("⚙️", "Response sections config:", responseConfig);
 
     const interpretation = await interpretQuery(conversation, userQuery, config.openai);
     const { intent, query, reasoning } = interpretation;
@@ -63,7 +74,7 @@ async function handleUserQuery(userQuery, conversation, config) {
     // Only check for chart suggestions if charts are enabled and we have results
     if (config.enableCharts !== false && dbResponse.result && Array.isArray(dbResponse.result) && dbResponse.result.length > 0) {
       chartType = await getChartType(query, dbResponse.result, config);
-      if (chartType && chartType !== 'none') {
+      if (chartType && chartType !== 'none' && responseConfig.chartSuggestion) {
         chartSuggestion = `\n\nWould you like me to show this result as a ${chartType} chart?`;
       }
     } else {
@@ -102,15 +113,37 @@ async function handleUserQueryStreaming(userQuery, conversation, config, res) {
     res.end();
   }
 
+  // Get response section configuration with defaults
+  const responseConfig = config.responseSections || {
+    intent: true,
+    reasoning: true,
+    query: true,
+    result: true,
+    summary: true,
+    chartSuggestion: true
+  };
+
   try {
     debugLog("🧠", "User query:", userQuery);
+    debugLog("⚙️", "Response sections config:", responseConfig);
 
     const interpretation = await interpretQuery(conversation, userQuery, config.openai);
     const { intent, query, reasoning } = interpretation;
 
-    sendChunk(`**Intent:** ${intent}\n`);
-    sendChunk(`**Reasoning:** ${reasoning}\n\n`);
-    sendChunk("**Query:**\n```js\n" + query + "\n```\n\n");
+    // Send intent section if enabled
+    if (responseConfig.intent) {
+      sendChunk(`**Intent:** ${intent}\n\n`);
+    }
+
+    // Send reasoning section if enabled
+    if (responseConfig.reasoning) {
+      sendChunk(`**Reasoning:** ${reasoning}\n\n`);
+    }
+
+    // Send query section if enabled
+    if (responseConfig.query) {
+      sendChunk("**Query:**\n```js\n" + query + "\n```\n\n");
+    }
 
     const dbResponse = await runQuery(query);
 
@@ -142,14 +175,19 @@ async function handleUserQueryStreaming(userQuery, conversation, config, res) {
       sendChunk("- The data doesn't contain records for the specified parameters\n");
       sendChunk("- Try broadening your search criteria or checking the data availability\n\n");
       
-      // Still show the query for debugging
-      sendChunk("**Query executed:**\n```js\n" + query + "\n```\n\n");
+      // Still show the query for debugging if enabled
+      if (responseConfig.query) {
+        sendChunk("**Query executed:**\n```js\n" + query + "\n```\n\n");
+      }
       endStream();
       return;
     }
 
-    const rawResult = JSON.stringify(dbResponse.result, null, 2);
-    sendChunk("**Result:**\n```json\n" + rawResult + "\n```\n\n");
+    // Send result section if enabled
+    if (responseConfig.result) {
+      const rawResult = JSON.stringify(dbResponse.result, null, 2);
+      sendChunk("**Result:**\n```json\n" + rawResult + "\n```\n\n");
+    }
 
     const summary = await summariseResult({
       userQuery,
@@ -158,14 +196,17 @@ async function handleUserQueryStreaming(userQuery, conversation, config, res) {
       systemPrompt: conversation[0].content
     }, config.openai.model);
 
-    sendChunk("**Summary:**\n" + summary + "\n");
+    // Send summary section if enabled
+    if (responseConfig.summary) {
+      sendChunk("**Summary:**\n" + summary + "\n\n");
+    }
 
     // Only check for chart suggestions if charts are enabled and we have results
     let chartType = null;
     if (config.enableCharts !== false && dbResponse.result && Array.isArray(dbResponse.result) && dbResponse.result.length > 0) {
       chartType = await getChartType(query, dbResponse.result, config);
-      if (chartType && chartType !== "none") {
-        sendChunk(`\nWould you like me to show this result as a ${chartType} chart?\n`);
+      if (chartType && chartType !== "none" && responseConfig.chartSuggestion) {
+        sendChunk(`Would you like me to show this result as a ${chartType} chart?\n`);
       }
     } else {
       debugLog("📊", "Chart check skipped (streaming):", {
