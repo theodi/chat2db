@@ -2,6 +2,7 @@ require("dotenv").config({ path: require('path').resolve(__dirname, '.env') });
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
+const { debugLog, isDebugMode } = require("./utils/debug");
 
 const { setupSystemPrompt, getSystemPrompt } = require("./services/setupSystemPrompt");
 
@@ -22,9 +23,15 @@ app.get("/", (req, res) => {
 
 // 🔄 Startup: load/generate system prompt
 setupSystemPrompt().then(() => {
-  console.log(getSystemPrompt());
+  if (isDebugMode) {
+    debugLog("📋", "System prompt loaded");
+    console.log(getSystemPrompt());
+  }
   app.listen(PORT, () => {
     console.log(`🚀 Backend API running at http://localhost:${PORT}`);
+    if (isDebugMode) {
+      debugLog("🔧", "Debug mode enabled");
+    }
   });
 }).catch(err => {
   console.error("❌ Failed to initialise system prompt:", err);

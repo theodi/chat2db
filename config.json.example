@@ -7,5 +7,6 @@
   "openai": {
     "model": "gpt-4o"
   },
-  "sampleSize": 5
+  "sampleSize": 5,
+  "enableCharts": true
 }

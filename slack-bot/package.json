@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js",
+    "dev": "DEBUG=true nodemon index.js",
+    "debug": "DEBUG=true NODE_ENV=development node index.js",
     "setup": "node setup.js",
     "test-backend": "node test-backend.js",
     "test": "echo \"Error: no test specified\" && exit 1"

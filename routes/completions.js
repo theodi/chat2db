@@ -8,6 +8,7 @@ const { determineIfDbQuery } = require("../services/queryClassifier");
 const { isChartConfirmation } = require("../services/chartConfirmation");
 const { generateChart } = require("../services/chartGenerator");
 const { getLastResult } = require("../services/sessionCache");
+const { debugLog, debugError, debugWarn, debugInfo } = require("../utils/debug");
 
 const OpenAI = require("openai");
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -41,11 +42,26 @@ router.post("/", async (req, res) => {
     }
 
     // 📊 Handle chart confirmations
-    const wantsChart = await isChartConfirmation(fullConversation, config);
     const last = getLastResult();
+    
+    // Only check for chart confirmation if we have a last result and charts are enabled
+    let wantsChart = false;
+    debugLog("🔍", "Chart confirmation check:", {
+      hasLastResult: !!last,
+      hasDbResult: !!last?.dbResult,
+      enableCharts: config.enableCharts,
+      lastUserMessage: lastUserMessage.content
+    });
+    
+    if (last?.dbResult && config.enableCharts !== false) {
+      wantsChart = await isChartConfirmation(fullConversation, config);
+      debugLog("📊", "Chart confirmation result:", wantsChart);
+    } else {
+      debugLog("📊", "Chart confirmation skipped - no last result or charts disabled");
+    }
 
    if (wantsChart && last?.dbResult) {
-    console.log("🔍 User confirmed they want a chart based on last result:", last);
+    debugLog("🔍", "User confirmed they want a chart based on last result:", last);
     const chartType = last.chartType;
     let chartJsConfig = await generateChart(last.rawQuery, last.dbResult, chartType, config);
 
@@ -59,7 +75,7 @@ router.post("/", async (req, res) => {
     try {
       parsedConfig = JSON.parse(chartJsConfig);
     } catch (e) {
-      console.error("❌ Failed to parse Chart.js config:", e.message);
+      debugError("❌", "Failed to parse Chart.js config:", e.message);
       return res.status(500).json({ error: { message: "Invalid Chart.js config generated." } });
     }
 
@@ -89,7 +105,7 @@ router.post("/", async (req, res) => {
           }
         ]
       };
-      console.log(JSON.stringify(toolChunk));
+      debugLog("📊", "Sending chart tool call:", JSON.stringify(toolChunk));
       res.write(`data: ${JSON.stringify(toolChunk)}\n\n`);
       res.write("data: [DONE]\n\n");
       res.end();
@@ -115,7 +131,7 @@ router.post("/", async (req, res) => {
     }
   }
   } catch (err) {
-    console.error("💥 Completion route error:", err);
+    debugError("💥", "Completion route error:", err);
     res.status(500).json({ error: { message: err.message } });
   }
 
@@ -187,7 +203,7 @@ router.post("/", async (req, res) => {
       });
     }
   } catch (err) {
-    console.error("💥 Completion route error:", err);
+    debugError("💥", "Completion route error:", err);
     res.status(500).json({ error: { message: err.message } });
   }
 });

@@ -1,52 +1,240 @@
-1. **Summary of the Database:**
-   - The database appears to represent historical data related to international football (soccer) matches. It includes information about match results, shootouts, individual goal scorers, and historical changes in country names that might affect the teams' identities over time.
+### 1. Summary of the Database
 
-2. **Collections and Fields:**
+This MongoDB database represents the Contracts Finder Application, a Node.js system that automatically searches for government contracts using the UK Contracts Finder API, stores them in MongoDB, and uses AI to rate their relevance to organizations. The application includes Google OAuth authentication, contract management, and AI-powered contract analysis. The database serves as a comprehensive repository for UK government contracts with intelligent relevance scoring and organization profile matching.
 
-   - **shootouts:**
-     - `_id`: Unique identifier for each document.
-     - `date`: Date of the shootout match.
-     - `home_team`: Name of the home team.
-     - `away_team`: Name of the away team.
-     - `winner`: Name of the team that won the shootout.
+### 2. Collections/Tables and Their Fields/Columns
 
-   - **goal_scorers:**
-     - `_id`: Unique identifier for each document.
-     - `date`: Date of the match.
-     - `home_team`: Name of the home team.
-     - `away_team`: Name of the away team.
-     - `team`: Name of the team for which the goal was scored.
-     - `scorer`: Name of the player who scored the goal.
-     - `minute`: Minute of the match when the goal was scored.
-     - `own_goal`: Boolean indicating if the goal was an own goal.
-     - `penalty`: Boolean indicating if the goal was scored from a penalty.
+#### Collection: `organisations`
+- **Fields/Columns:**
+  - `_id`: Unique identifier for the organization.
+  - `name`: Name of the organization.
+  - `description`: Description of the organization.
+  - `industry`: Industry sector of the organization.
+  - `size`: Size of the organization (e.g., small, medium, large).
+  - `capabilities`: List of capabilities or services offered by the organization.
+  - `interests`: List of interests or focus areas of the organization.
+  - `location`: Location of the organization.
+  - `website`: Website URL of the organization.
+  - `contactEmail`: Contact email address for the organization.
+  - `createdAt`: Timestamp of when the organization record was created.
+  - `updatedAt`: Timestamp of when the organization record was last updated.
+  - `__v`: Version key for the document.
+  - `exclusions`: List of services or activities the organization does not engage in.
+  - `searchKeywords`: Keywords associated with the organization for search purposes.
 
-   - **former_names:**
-     - `_id`: Unique identifier for each document.
-     - `current`: Current name of the country.
-     - `former`: Former name of the country.
-     - `start_date`: Date when the former name started being used.
-     - `end_date`: Date when the former name stopped being used.
+**Note**: This collection contains only one organization - the user's own organization. The AI ratings in the contracts collection are calculated against this single organization's profile to determine contract relevance.
 
-   - **results:**
-     - `_id`: Unique identifier for each document.
-     - `date`: Date of the match.
-     - `home_team`: Name of the home team.
-     - `away_team`: Name of the away team.
-     - `home_score`: Number of goals scored by the home team.
-     - `away_score`: Number of goals scored by the away team.
-     - `tournament`: Name of the tournament or type of match.
-     - `city`: City where the match was played.
-     - `country`: Country where the match was played.
-     - `neutral`: Boolean indicating if the match was played on neutral ground.
+#### Collection: `contracts`
+- **Fields/Columns:**
+  - `_id`: Unique identifier for the contract.
+  - `itemId`: Unique item identifier from the UK Contracts Finder API (String, required, unique, indexed).
+  - `parentId`: Identifier for the parent contract, if applicable (String).
+  - `noticeIdentifier`: Identifier for the contract notice from the UK government (String).
+  - `title`: Title of the contract (String, required).
+  - `description`: Detailed description of the contract requirements and scope (String).
+  - `cpvDescription`: Common Procurement Vocabulary description (String).
+  - `cpvDescriptionExpanded`: Expanded description of the CPV codes (String).
+  - `publishedDate`: Date when the contract was published on Contracts Finder (Date).
+  - `deadlineDate`: Deadline for contract submissions (Date).
+  - `awardedDate`: Date when the contract was awarded, if applicable (Date).
+  - `awardedValue`: Value of the awarded contract (Number).
+  - `awardedSupplier`: Supplier awarded the contract, if applicable (String).
+  - `approachMarketDate`: Date when the market was approached for the contract (Date).
+  - `valueLow`: Lower bound of the contract value estimate (Number).
+  - `valueHigh`: Upper bound of the contract value estimate (Number).
+  - `postcode`: Postcode related to the contract location (String).
+  - `coordinates`: Geographic coordinates of the contract location (String).
+  - `isSubNotice`: Boolean indicating if it is a sub-notice (Boolean).
+  - `noticeType`: Type of notice (e.g., Contract) (String).
+  - `noticeStatus`: Status of the notice (e.g., Open, Closed, Awarded) (String).
+  - `isSuitableForSme`: Boolean indicating if the contract is suitable for SMEs (Boolean).
+  - `isSuitableForVco`: Boolean indicating if the contract is suitable for VCOs (Boolean).
+  - `lastNotifableUpdate`: Timestamp of the last notifiable update (Date).
+  - `organisationName`: Name of the organization related to the contract (String, required).
+  - `sector`: Sector related to the contract (String).
+  - `cpvCodes`: CPV codes associated with the contract (String).
+  - `cpvCodesExtended`: Extended CPV codes associated with the contract (String).
+  - `region`: Region related to the contract (String).
+  - `regionText`: Text description of the region (String).
+  - `start`: Start date of the contract (Date).
+  - `end`: End date of the contract (Date).
+  - `createdAt`: Timestamp of when the contract record was created (Date, default: Date.now).
+  - `updatedAt`: Timestamp of when the contract record was last updated (Date, default: Date.now).
+  - `__v`: Version key for the document.
 
-3. **Potential User Queries:**
-   - What are the historical results of matches between two specific teams?
-   - Which team has won the most shootouts?
-   - Who are the top goal scorers in international matches?
-   - How many goals were scored by a specific player, and in which matches?
-   - What are the historical name changes of countries that have participated in international football?
-   - How many matches have ended in a draw?
-   - What is the win-loss record of a specific team over a certain period?
-   - Which matches were played in a specific city or country?
-   - How many goals were scored in a specific tournament?
+**AI Rating Object (`aiRating`):**
+  - `aiRating.score`: AI-generated relevance score (Number, 0-10).
+  - `aiRating.relevance`: Relevance level (String, enum: 'low', 'medium', 'high', 'excellent').
+  - `aiRating.explanation`: AI explanation of the rating (String).
+  - `aiRating.opportunityDescription`: AI description of the opportunity (String).
+  - `aiRating.matchReasons`: Array of reasons why the contract matches the organization (Array of Strings).
+  - `aiRating.ratedAt`: Date when the AI rating was generated (Date).
+  - `aiRating.ratedBy`: Source of the rating (String, default: 'AI').
+
+**Human Reviewer Rating Object (`reviewerRating`):**
+  - `reviewerRating.score`: Human reviewer relevance score (Number, 0-10).
+  - `reviewerRating.relevance`: Relevance level (String, enum: 'low', 'medium', 'high', 'excellent').
+  - `reviewerRating.comments`: Human reviewer comments (String).
+  - `reviewerRating.ratedAt`: Date when the human rating was given (Date).
+  - `reviewerRating.ratedBy`: ID of the person who rated (String).
+  - `reviewerRating.reviewerName`: Name of the reviewer (String).
+
+**HubSpot Deal Tracking Object (`hubspotDeal`):**
+  - `hubspotDeal.dealId`: HubSpot deal identifier (String, indexed).
+  - `hubspotDeal.dealUrl`: URL to the HubSpot deal (String).
+  - `hubspotDeal.createdAt`: Date when the deal was created (Date).
+  - `hubspotDeal.createdBy`: ID of the person who created the deal (String).
+  - `hubspotDeal.dealName`: Name of the HubSpot deal (String).
+  - `hubspotDeal.dealAmount`: Value of the deal (Number).
+  - `hubspotDeal.dealStage`: Current stage of the deal (String).
+  - `hubspotDeal.lastSynced`: Date when last synced with HubSpot (Date).
+
+### 3. How the AI Can Interact with This Database
+
+The AI can help users interact with this Contracts Finder database in the following ways:
+
+#### Query Generation for Contract Discovery:
+- Generate MongoDB queries to find contracts matching specific criteria (location, sector, value range, deadline dates)
+- Create queries to identify contracts suitable for specific organization profiles
+- Build queries to find contracts with particular CPV codes or keywords
+- Generate queries to analyze contract trends and patterns
+
+#### Organization Profile Matching:
+- Query contracts that align with the user organization's capabilities and interests
+- Find contracts that match the organization's industry sector and size
+- Identify contracts that exclude certain services based on the organization's exclusions
+- Match contracts to the organization based on location and service requirements
+
+#### AI Rating Analysis:
+- Query contracts with high AI relevance ratings for the user organization (`aiRating.score >= 8`)
+- Find contracts with specific relevance levels (`aiRating.relevance: 'high'` or `'excellent'`)
+- Analyze AI-generated explanations and opportunity descriptions (`aiRating.explanation`, `aiRating.opportunityDescription`)
+- Query contracts based on AI match reasons (`aiRating.matchReasons`)
+- Find contracts rated by AI within specific date ranges (`aiRating.ratedAt`)
+- Compare AI ratings vs human reviewer ratings (`aiRating.score` vs `reviewerRating.score`)
+- Generate queries to analyze rating patterns and trends
+
+#### Contract Management Queries:
+- Find open contracts with upcoming deadlines (`noticeStatus: 'Open'`, `deadlineDate` filters)
+- Query awarded contracts and their values (`awardedDate` exists, `awardedValue`)
+- Identify contracts by notice status (Open, Closed, Awarded)
+- Generate queries for contract value analysis and reporting
+- Track HubSpot deal integration status (`hubspotDeal.dealId` exists/not exists)
+- Query contracts by deal stage in HubSpot (`hubspotDeal.dealStage`)
+- Find contracts that have been manually reviewed (`reviewerRating` exists)
+- Compare AI vs human ratings for quality assessment
+
+#### Advanced Analytics:
+- Create aggregation queries for contract value statistics (`valueLow`, `valueHigh`, `awardedValue`)
+- Generate queries for geographic distribution of contracts (`postcode`, `coordinates`, `region`)
+- Build queries for sector-based contract analysis (`sector`)
+- Create queries for SME and VCO suitability analysis (`isSuitableForSme`, `isSuitableForVco`)
+- Analyze AI rating distribution and trends (`aiRating.score`, `aiRating.relevance`)
+- Compare AI vs human reviewer rating accuracy
+- Track HubSpot deal conversion rates and stages
+- Generate reports on contract pipeline and opportunity analysis
+
+#### External System Integration:
+- **Contract Links**: When referencing contracts, include links to the contract details at `https://cf.learndata.info/contracts/{itemId}` where `{itemId}` is the contract's `itemId` field
+- **HubSpot Integration**: When discussing deals or opportunities, reference HubSpot portal ID 748510 and include links to deals at `https://app.hubspot.com/contacts/748510/{dealId}` where `{dealId}` is the `hubspotDeal.dealId` from the contract data
+- **Cross-Platform References**: Connect contract data with HubSpot deal tracking for comprehensive opportunity management
+
+### 4. MongoDB Query Generation Guidelines
+
+When generating MongoDB queries, follow these strict guidelines:
+
+#### Valid Query Formats:
+- **Find queries**: `db.contracts.find({field: value})`
+- **Aggregate queries**: `db.contracts.aggregate([{stage1}, {stage2}])`
+- **Count queries**: `db.contracts.countDocuments({field: value})`
+
+#### Query Syntax Rules:
+1. **Use proper MongoDB syntax**: Always use `db.collection.method()` format
+2. **Valid field names**: Use exact field names from the schema (e.g., `aiRating.score`, `noticeStatus`)
+3. **Proper data types**: 
+   - Strings: `{field: "value"}`
+   - Numbers: `{field: 123}`
+   - Booleans: `{field: true}`
+   - Dates: `{field: new Date("2024-01-01")}`
+   - Arrays: `{field: {$in: ["value1", "value2"]}}`
+4. **Nested objects**: Use dot notation (e.g., `{"aiRating.score": {$gte: 8}}`)
+5. **Operators**: Use proper MongoDB operators (`$gte`, `$lte`, `$in`, `$regex`, etc.)
+6. **No trailing commas**: Ensure proper JSON syntax
+7. **Valid regex**: Use proper regex syntax for text searches
+8. **Multiple conditions**: All conditions must be in a single object for AND logic
+   - **Correct**: `db.contracts.find({condition1: value1, condition2: value2})`
+   - **Incorrect**: `db.contracts.find({condition1}, {condition2})`
+
+#### Common Query Patterns:
+- **Date ranges**: `{publishedDate: {$gte: new Date("2024-01-01"), $lte: new Date("2024-12-31")}}`
+- **Numeric ranges**: `{valueLow: {$gte: 50000, $lte: 500000}}`
+- **Text search**: `{title: {$regex: "software", $options: "i"}}`
+- **Array contains**: `{cpvCodes: {$regex: "72000000", $options: "i"}}`
+- **Nested field queries**: `{"aiRating.relevance": "high"}`
+
+#### Examples of Valid Queries:
+```javascript
+// Find contracts with high AI ratings
+db.contracts.find({"aiRating.score": {$gte: 8}})
+
+// Find contracts in specific region
+db.contracts.find({region: "London"})
+
+// Find contracts with date range
+db.contracts.find({publishedDate: {$gte: new Date("2024-01-01")}})
+
+// Multiple conditions - all in single object
+db.contracts.find({publishedDate: {$gte: new Date("2024-01-01")}, "aiRating.score": {$gte: 8}})
+
+// Find recent contracts with high ratings
+db.contracts.find({createdAt: {$gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)}, "aiRating.score": {$gte: 8}})
+
+// Find contracts with HubSpot deals
+db.contracts.find({"hubspotDeal.dealId": {$exists: true}})
+
+// Find contracts by HubSpot deal stage
+db.contracts.find({"hubspotDeal.dealStage": "Proposal"})
+
+// Aggregate to count contracts by status
+db.contracts.aggregate([{$group: {_id: "$noticeStatus", count: {$sum: 1}}}])
+```
+
+#### Response Format Guidelines:
+When providing contract information in responses, include:
+- **Contract Links**: `https://cf.learndata.info/contracts/{itemId}` for each contract
+- **HubSpot Deal Links**: `https://app.hubspot.com/contacts/748510/{dealId}` for contracts with HubSpot deals (where `{dealId}` is the `hubspotDeal.dealId`)
+- **Cross-Platform Integration**: Connect contract opportunities with HubSpot deal management
+
+### 5. Potential User Queries
+
+Users might ask the following questions about this data:
+
+- What government contracts are currently open and suitable for SMEs in my region?
+- Which contracts align with my organization's capabilities in data services?
+- Can you find contracts with high AI relevance ratings for my organization?
+- What are the upcoming contract deadlines for the next 30 days?
+- Which contracts have been awarded in the healthcare sector this year?
+- Find contracts with values between £50k and £500k in the IT sector
+- What contracts are available for organizations with data governance expertise?
+- Show me contracts in London with AI ratings above 8/10 for my organization
+- Which contracts are suitable for VCOs in the education sector?
+- What is the average contract value for technology services in the North West?
+- Find contracts that match our organization's interests in cloud computing
+- Show contracts with specific CPV codes related to software development
+- Which contracts have been awarded to suppliers in the last quarter?
+- Find contracts that exclude services we don't provide
+- What are the highest-value contracts currently open for bidding?
+- Show me contracts with AI relevance level 'excellent' and score >= 9
+- Find contracts where AI and human reviewers disagree on ratings
+- Which contracts have been converted to HubSpot deals?
+- Show contracts with AI match reasons containing 'data governance'
+- Find contracts rated by AI in the last week with high relevance scores
+- Which contracts have been manually reviewed but not converted to deals?
+- Show contracts with HubSpot deals in 'Proposal' stage
+- Find contracts with AI explanations mentioning 'cloud services'
+- Which contracts have the highest discrepancy between AI and human ratings?
+- Can you provide links to the contract details for the top opportunities?
+- Which contracts have existing HubSpot deals and can you provide the deal links?
+- Show me the contract details page for the highest-rated opportunities
+- Which contracts are ready for HubSpot deal creation?
+- Can you show me the HubSpot deal records for contracts with deals?

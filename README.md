@@ -79,8 +79,18 @@ Configure the backend to point to your MongoDB instance and preferred OpenAI mod
 
 ### 5. Start the server
 
+#### Production Mode
 ```bash
-node index.js
+npm start
+# or
+node server.js
+```
+
+#### Development Mode (with Debug Logging)
+```bash
+npm run dev
+# or
+npm run debug
 ```
 
 The backend runs on port `3001` by default and exposes the following route:
@@ -88,6 +98,49 @@ The backend runs on port `3001` by default and exposes the following route:
 ```
 POST /v1/chat/completions
 ```
+
+---
+
+## 🔧 Debug Mode
+
+The application includes a comprehensive debug mode that provides detailed logging for development and troubleshooting.
+
+### Enabling Debug Mode
+
+**Option 1: Using npm scripts**
+```bash
+npm run dev      # Sets DEBUG=true
+npm run debug    # Sets DEBUG=true and NODE_ENV=development
+```
+
+**Option 2: Using environment variables**
+```bash
+DEBUG=true node server.js
+DEBUG=true NODE_ENV=development node server.js
+```
+
+### Debug Features
+
+When debug mode is enabled, you'll see:
+
+- **🔍 Query Processing**: Detailed logging of user queries and AI interpretations
+- **📊 Database Operations**: MongoDB query parsing, validation, and execution details
+- **🧠 AI Interactions**: OpenAI API calls and responses
+- **📈 Chart Operations**: Chart suggestion logic and processing
+- **⚠️ Error Handling**: Detailed error messages with context
+- **⏱️ Timestamps**: All debug messages include timestamps
+
+### Debug Output Example
+
+```
+[2024-01-15T10:30:45.123Z] 🧠 User query: Any relevant opportunities in added in the last week?
+[2024-01-15T10:30:45.124Z] 🔍 Full raw query: db.contracts.find({createdAt: {$gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)}, "aiRating.score": {$gte: 8}})
+[2024-01-15T10:30:45.125Z] 🔍 Extracted query components: {collection: "contracts", method: "find", argsRaw: "{createdAt: {$gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)}, "aiRating.score": {$gte: 8}}", argsLength: 89}
+[2024-01-15T10:30:45.126Z] 🔍 MongoDB query debug: {collection: "contracts", method: "find", args: [{createdAt: {$gte: 2024-01-08T10:30:45.126Z}, "aiRating.score": {$gte: 8}}], argsType: "object", argsLength: 1}
+[2024-01-15T10:30:45.127Z] 🔍 Find result: {resultType: "object", isArray: true, length: 5}
+```
+
+---
 
 ---
 
