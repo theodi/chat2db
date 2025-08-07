@@ -1,10 +1,10 @@
-# 🚀 Chat2DB - AI-Powered Database Query System
+# Chat2DB - AI-Powered Database Query System
 
 A comprehensive suite of services that enables natural language interaction with your MongoDB database through multiple interfaces. Built with AI-powered query interpretation, intelligent reasoning, and seamless integration across web and Slack platforms.
 
 ---
 
-## 🎯 Overview
+## Overview
 
 Chat2DB transforms your database into an intelligent, conversational interface. Ask questions in plain English and get insights, visualizations, and actionable data - all powered by AI that understands your data structure and business context.
 
@@ -37,18 +37,18 @@ Chat2DB transforms your database into an intelligent, conversational interface. 
 
 ## ✨ Key Features
 
-* 🧠 **AI-Powered Queries**: Natural language to MongoDB query conversion
-* 📊 **Smart Visualizations**: Automatic chart suggestions and rendering
-* 🔄 **Streaming Responses**: Real-time reasoning and progressive results
-* 🎛️ **Configurable Output**: Control response sections and detail levels
-* 🔒 **Security-First**: Database-level access controls and query validation
-* 🏢 **Enterprise Ready**: Compliance guidelines and business context support
-* 🚀 **Unified Launcher**: Start all services with a single command
-* 🐛 **Debug Mode**: Comprehensive logging for development and troubleshooting
+* **AI-Powered Queries**: Natural language to MongoDB query conversion
+* **Smart Visualizations**: Automatic chart suggestions and rendering
+* **Streaming Responses**: Real-time reasoning and progressive results
+* **Configurable Output**: Control response sections and detail levels
+* **Security-First**: Database-level access controls and query validation
+* **Enterprise Ready**: Compliance guidelines and business context support
+* **Unified Launcher**: Start all services with a single command
+* **Debug Mode**: Comprehensive logging for development and troubleshooting
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Launch All Services
 
@@ -79,7 +79,7 @@ cd slack-bot && npm run dev
 
 ---
 
-## 📋 Installation
+## Installation
 
 ### 1. Clone the repo
 
@@ -470,11 +470,11 @@ Add security settings to your `config.json`:
 
 ---
 
-## 🤖 How It Works
+## How It Works
 
 When a request is sent to `/v1/chat/completions`, the system performs the following steps:
 
-### 🔍 1. Classify the Query
+### 1. Classify the Query
 
 The `queryClassifier` uses an OpenAI call to determine if the user's message is:
 
@@ -490,11 +490,11 @@ Here's the updated **"Generate an Answer"** section of the `README.md`, rewritte
 
 ---
 
-### 🧠 2. Generate an Answer (How It Works)
+### 2. Generate an Answer (How It Works)
 
 When a user query is sent, the backend performs **step-by-step reasoning** and responds progressively through a streamed interface. Here's how the process works in the `handleUserQueryStreaming` function:
 
-#### ✅ Step-by-Step Breakdown
+#### Step-by-Step Breakdown
 
 1. **Interpret the Intent**
    The system uses `interpretQuery` to ask the AI to determine:
@@ -544,7 +544,7 @@ When a user query is sent, the backend performs **step-by-step reasoning** and r
 
 This clear, conversational response cycle makes the backend ideal for use in an interactive chat environment, progressively showing reasoning, results, and visual options without overwhelming the user.
 
-### 📊 3. Visualisation Support
+### 3. Visualisation Support
 
 If the model suggests a chart:
 
@@ -557,7 +557,7 @@ This chart config is then rendered on the frontend via Assistant UI.
 
 ---
 
-## 🧪 Testing
+## Testing
 
 You can test the API directly with `curl` or Postman:
 
@@ -575,11 +575,11 @@ curl http://localhost:3001/v1/chat/completions \
 
 ---
 
-## 🔗 Frontend Integration
+## Frontend Integration
 
 This backend supports multiple frontend interfaces:
 
-### 🌐 Assistant UI (Web Frontend)
+### Assistant UI (Web Frontend)
 
 To use this backend with a graphical chat interface, we recommend pairing it with the [Assistant UI frontend](https://github.com/assistant-ui/assistant-ui).
 
@@ -591,7 +591,7 @@ Follow the full setup guide in the [`frontend/README.md`](../frontend/README.md)
 
 Once connected, you'll be able to stream AI responses, inspect queries, and render database results as interactive charts — all inside a polished web UI.
 
-### 🤖 Slack Bot Frontend
+### Slack Bot Frontend
 
 For team collaboration, you can use the Slack bot frontend that allows querying the database directly from Slack channels and direct messages.
 
