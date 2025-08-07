@@ -63,7 +63,16 @@ Configure the backend to point to your MongoDB instance and preferred OpenAI mod
   "openai": {
     "model": "gpt-4o"
   },
-  "sampleSize": 5
+  "sampleSize": 5,
+  "enableCharts": true,
+  "responseSections": {
+    "intent": true,
+    "reasoning": true,
+    "query": true,
+    "result": true,
+    "summary": true,
+    "chartSuggestion": true
+  }
 }
 ```
 
@@ -74,10 +83,56 @@ Configure the backend to point to your MongoDB instance and preferred OpenAI mod
 * `mongodb.dbName`: name of the database to query
 * `openai.model`: OpenAI model name (e.g. `gpt-4o`, `gpt-4`, `gpt-3.5-turbo`)
 * `sampleSize`: number of documents to sample when describing collections
+* `enableCharts`: enable/disable chart suggestions (default: `true`)
+* `responseSections`: control which sections appear in responses (see [Response Configuration](#response-configuration))
+
+### 5. System Prompt Setup
+
+The backend automatically generates a system prompt based on your database schema if one isn't present. However, **we strongly recommend tailoring it** for your specific use case.
+
+#### Automatic Generation
+
+If no system prompt exists, the backend will:
+
+1. **Connect to your MongoDB database**
+2. **Sample documents** from each collection (using `sampleSize` from config)
+3. **Analyze the schema** and field types
+4. **Generate a basic prompt** describing the database structure
+5. **Save it** to `data/system_prompt.txt`
+
+#### Manual Customization (Recommended)
+
+For best results, customize the generated prompt stored in `data/system_prompt.txt`
+
+**Key areas to customize:**
+
+- **Database description**: Explain what your data represents and its business purpose
+- **Field descriptions**: Add business context to fields and their relationships
+- **Query examples**: Include common use cases and expected patterns
+- **Response guidelines**: Define how the AI should format answers and what tone to use
+- **Integration details**: Add links to external systems and cross-platform references
+- **Security limitations**: Define banned queries, restricted collections, and access controls
+- **Performance constraints**: Set limits on query complexity and result sizes
+- **Compliance guidelines**: Add organizational policies, ethical considerations, and data handling rules
+- **Business context**: Include industry-specific terminology and domain knowledge
+
+#### Debug Mode
+
+Enable debug mode to see the generated system prompt:
+
+```bash
+DEBUG=true npm start
+```
+
+You'll see output like:
+```
+[2024-01-15T10:30:45.123Z] 📋 System prompt loaded
+[Generated system prompt content...]
+```
 
 ---
 
-### 5. Start the server
+### 6. Start the server
 
 #### Production Mode
 ```bash
@@ -141,6 +196,161 @@ When debug mode is enabled, you'll see:
 ```
 
 ---
+
+---
+
+## ⚙️ Response Configuration
+
+Control what sections are included in AI responses through the `responseSections` configuration:
+
+### Available Sections
+
+| Section | Description | Default |
+|---------|-------------|---------|
+| `intent` | AI's interpretation of user intent | `true` |
+| `reasoning` | AI's reasoning process | `true` |
+| `query` | Generated MongoDB query | `true` |
+| `result` | Raw database results | `true` |
+| `summary` | Human-readable summary | `true` |
+| `chartSuggestion` | Chart generation suggestions | `true` |
+
+### Common Configurations
+
+#### Production Mode (Minimal Output)
+```json
+{
+  "responseSections": {
+    "intent": false,
+    "reasoning": false,
+    "query": false,
+    "result": false,
+    "summary": true,
+    "chartSuggestion": true
+  }
+}
+```
+
+#### Development Mode (Full Debugging)
+```json
+{
+  "responseSections": {
+    "intent": true,
+    "reasoning": true,
+    "query": true,
+    "result": true,
+    "summary": true,
+    "chartSuggestion": true
+  }
+}
+```
+
+#### Slack Bot Mode (Summary Only)
+```json
+{
+  "responseSections": {
+    "intent": false,
+    "reasoning": false,
+    "query": false,
+    "result": false,
+    "summary": true,
+    "chartSuggestion": true
+  }
+}
+```
+
+For detailed configuration options, see [Response Configuration Documentation](RESPONSE_CONFIG.md).
+
+---
+
+## 🔒 Security and Enforcement
+
+### Database-Level Restrictions
+
+**Important**: Don't rely solely on AI instructions for security. Implement database-level restrictions:
+
+#### MongoDB Access Control
+```javascript
+// Create restricted user with limited permissions
+db.createUser({
+  user: "chat2db_user",
+  pwd: "secure_password",
+  roles: [
+    { role: "read", db: "your_database", collection: "contracts" },
+    { role: "read", db: "your_database", collection: "organisations" }
+    // NO access to users, admin_logs, etc.
+  ]
+})
+```
+
+#### Query Validation Middleware
+```javascript
+// In your query execution layer
+function validateQuery(query) {
+  const bannedCollections = ['users', 'admin_logs', 'sensitive_data'];
+  const bannedPatterns = [
+    /\.find\(\)\.limit\(\d{4,}\)/,
+    /\.find\(.*email.*\)/,
+    /\.find\(.*phone.*\)/
+  ];
+  
+  // Check for banned collections
+  if (bannedCollections.some(col => query.includes(`db.${col}.`))) {
+    throw new Error('Access denied: Collection not allowed');
+  }
+  
+  // Check for banned patterns
+  if (bannedPatterns.some(pattern => pattern.test(query))) {
+    throw new Error('Query pattern not allowed');
+  }
+  
+  return true;
+}
+```
+
+#### Response Sanitization
+```javascript
+// Remove sensitive fields from responses
+function sanitizeResponse(data) {
+  const sensitiveFields = ['email', 'phone', 'ssn', 'password'];
+  
+  function removeSensitive(obj) {
+    if (Array.isArray(obj)) {
+      return obj.map(removeSensitive);
+    }
+    if (obj && typeof obj === 'object') {
+      const clean = {};
+      for (const [key, value] of Object.entries(obj)) {
+        if (!sensitiveFields.includes(key)) {
+          clean[key] = removeSensitive(value);
+        }
+      }
+      return clean;
+    }
+    return obj;
+  }
+  
+  return removeSensitive(data);
+}
+```
+
+### Configuration-Based Restrictions
+
+Add security settings to your `config.json`:
+
+```json
+{
+  "security": {
+    "bannedCollections": ["users", "admin_logs", "sensitive_data"],
+    "maxResultSize": 1000,
+    "sensitiveFields": ["email", "phone", "ssn", "password"],
+    "requireAggregation": true,
+    "allowedQueryPatterns": [
+      "db.contracts.find({})",
+      "db.contracts.aggregate([...])"
+    ]
+  }
+}
+```
 
 ---
 
