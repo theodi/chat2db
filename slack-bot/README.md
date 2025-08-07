@@ -107,7 +107,7 @@ Update your `config.json` with the tokens from Slack:
 npm start
 ```
 
-For development with auto-restart:
+For development with auto-restart and debugging on:
 
 ```bash
 npm run dev
@@ -227,4 +227,4 @@ The bot is designed to work seamlessly with your existing backend without requir
 
 ## 📝 License
 
-ISC License - see main project LICENSE file. 
+MIT License - see main project LICENSE file. 
