@@ -1,0 +1,46 @@
+{
+  "services": {
+    "main": {
+      "enabled": true,
+      "port": 3001,
+      "script": "npm start",
+      "cwd": ".",
+      "name": "Main Service",
+      "description": "Chat2DB Backend API"
+    },
+    "frontend": {
+      "enabled": true,
+      "port": 3000,
+      "script": "npm run dev",
+      "cwd": "./frontend/assistant",
+      "name": "Frontend",
+      "description": "Assistant UI Web Interface"
+    },
+    "slackBot": {
+      "enabled": true,
+      "script": "npm start",
+      "cwd": "./slack-bot",
+      "name": "Slack Bot",
+      "description": "Slack Bot Interface"
+    }
+  },
+  "presets": {
+    "main": {
+      "description": "Main service only",
+      "services": ["main"]
+    },
+    "frontend": {
+      "description": "Main service + Frontend",
+      "services": ["main", "frontend"]
+    },
+    "slack": {
+      "description": "Main service + Slack Bot",
+      "services": ["main", "slackBot"]
+    },
+    "all": {
+      "description": "All services",
+      "services": ["main", "frontend", "slackBot"]
+    }
+  },
+  "defaultPreset": "main"
+} 
