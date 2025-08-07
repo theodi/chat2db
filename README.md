@@ -264,7 +264,7 @@ When debug mode is enabled, you'll see:
 
 ---
 
-## ⚙️ Response Configuration
+## Response Configuration
 
 Control what sections are included in AI responses through the `responseSections` configuration:
 
@@ -327,7 +327,7 @@ For detailed configuration options, see [Response Configuration Documentation](R
 
 ---
 
-## 🚀 Unified Service Launcher
+## Unified Service Launcher
 
 The project includes a unified launcher that can start multiple services simultaneously:
 
@@ -378,7 +378,7 @@ For detailed launcher documentation, see [Launcher Documentation](LAUNCHER.md).
 
 ---
 
-## 🔒 Security and Enforcement
+## Security and Enforcement
 
 ### Database-Level Restrictions
 
