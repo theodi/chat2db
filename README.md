@@ -1,26 +1,91 @@
-# 🧠 AI Query Backend (MongoDB + OpenAI-Compatible API)
+# 🚀 Chat2DB - AI-Powered Database Query System
 
-This backend exposes an OpenAI-compatible `/v1/chat/completions` API that intelligently answers user queries using MongoDB data. It's designed to work seamlessly with [Assistant UI](https://github.com/assistant-ui/assistant-ui) and supports natural language querying, reasoning, and chart generation via Chart.js.
-
----
-
-## 🔧 Features
-
-* 🧠 Powered by OpenAI (e.g. `gpt-4o`)
-* 🗃️ Answers queries using your MongoDB collection
-* 📊 Suggests and renders charts using Chart.js
-* 🧵 Fully compatible with streaming and non-streaming conversations
-* ✅ Supports Assistant UI's `/v1/chat/completions` endpoint
+A comprehensive suite of services that enables natural language interaction with your MongoDB database through multiple interfaces. Built with AI-powered query interpretation, intelligent reasoning, and seamless integration across web and Slack platforms.
 
 ---
 
-## 🚀 Installation
+## 🎯 Overview
+
+Chat2DB transforms your database into an intelligent, conversational interface. Ask questions in plain English and get insights, visualizations, and actionable data - all powered by AI that understands your data structure and business context.
+
+---
+
+## 🔧 Core Services
+
+### 🧠 **Backend API** (`/`)
+- **OpenAI-compatible API** for natural language database queries
+- **MongoDB integration** with intelligent query generation
+- **Streaming responses** with real-time reasoning and results
+- **Chart suggestions** using Chart.js for data visualization
+- **Configurable responses** for different use cases and environments
+
+### 🌐 **Web Frontend** (`/frontend`)
+- **Assistant UI integration** for rich web-based interactions
+- **Real-time streaming** with progressive response display
+- **Chart rendering** with interactive visualizations
+- **Markdown support** for formatted responses and code highlighting
+- **Responsive design** for desktop and mobile use
+
+### 🤖 **Slack Bot** (`/slack-bot`)
+- **@mention support** in any Slack channel or private group
+- **Direct messaging** for private conversations
+- **Threaded conversations** with context preservation
+- **Summary-focused responses** optimized for chat interfaces
+- **Team collaboration** with shared conversation history
+
+---
+
+## ✨ Key Features
+
+* 🧠 **AI-Powered Queries**: Natural language to MongoDB query conversion
+* 📊 **Smart Visualizations**: Automatic chart suggestions and rendering
+* 🔄 **Streaming Responses**: Real-time reasoning and progressive results
+* 🎛️ **Configurable Output**: Control response sections and detail levels
+* 🔒 **Security-First**: Database-level access controls and query validation
+* 🏢 **Enterprise Ready**: Compliance guidelines and business context support
+* 🚀 **Unified Launcher**: Start all services with a single command
+* 🐛 **Debug Mode**: Comprehensive logging for development and troubleshooting
+
+---
+
+## 🚀 Quick Start
+
+### Launch All Services
+
+```bash
+# Start everything (Backend + Frontend + Slack Bot)
+npm run launch:all
+
+# Or start specific combinations
+npm run launch:frontend    # Backend + Web UI
+npm run launch:slack       # Backend + Slack Bot
+npm run launch:main        # Backend only
+```
+
+### Individual Service Setup
+
+Each service can be configured and run independently:
+
+```bash
+# Backend API only
+npm start
+
+# Web Frontend (requires backend running)
+cd frontend && npm run dev
+
+# Slack Bot (requires backend running)
+cd slack-bot && npm run dev
+```
+
+---
+
+## 📋 Installation
 
 ### 1. Clone the repo
 
 ```bash
-git clone <your-backend-repo>
-cd <your-backend-repo>
+git clone <your-repo>
+cd <your-repo>
 ```
 
 ---
@@ -259,6 +324,57 @@ Control what sections are included in AI responses through the `responseSections
 ```
 
 For detailed configuration options, see [Response Configuration Documentation](RESPONSE_CONFIG.md).
+
+---
+
+## 🚀 Unified Service Launcher
+
+The project includes a unified launcher that can start multiple services simultaneously:
+
+### Available Presets
+
+| Preset | Services | Use Case |
+|--------|----------|----------|
+| `main` | Backend API only | API-only deployment |
+| `frontend` | Backend + Web UI | Web application |
+| `slack` | Backend + Slack Bot | Team collaboration |
+| `all` | All services | Complete development setup |
+
+### Configuration
+
+Edit `launcher.config.json` to customize service combinations:
+
+```json
+{
+  "services": {
+    "main": { "enabled": true, "port": 3001 },
+    "frontend": { "enabled": true, "port": 3000 },
+    "slackBot": { "enabled": true }
+  },
+  "presets": {
+    "production": { "services": ["main"] },
+    "development": { "services": ["main", "frontend"] }
+  }
+}
+```
+
+### Usage Examples
+
+```bash
+# Development with all services
+npm run launch:all
+
+# Production deployment (backend only)
+npm run launch:main
+
+# Web application setup
+npm run launch:frontend
+
+# Team collaboration setup
+npm run launch:slack
+```
+
+For detailed launcher documentation, see [Launcher Documentation](LAUNCHER.md).
 
 ---
 
